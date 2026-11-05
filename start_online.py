@@ -7,7 +7,6 @@ import re
 import sys
 import time
 import socket
-import urllib.request
 import webbrowser
 from pathlib import Path
 
@@ -22,6 +21,7 @@ if sys.platform == "win32":
 PROJECT_ROOT = Path(__file__).resolve().parent
 CLOUDFLARED_PATH = PROJECT_ROOT / "tools" / "cloudflared.exe"
 LINK_FILE = PROJECT_ROOT / "ONLINE_LINK.txt"
+LOG_FILE = PROJECT_ROOT / "tools" / "tunnel_log.txt"
 
 if not CLOUDFLARED_PATH.exists():
     print(f"Error: Tunnel tool not found at {CLOUDFLARED_PATH}")
@@ -42,6 +42,7 @@ print()
 
 streamlit_proc = None
 
+# 1. Start Streamlit if not already active
 if is_port_in_use(8501):
     print("1. Local Streamlit data engine is already active on port 8501.")
 else:
@@ -52,7 +53,9 @@ else:
         "streamlit",
         "run",
         "app.py",
-        "--server.headless=false",
+        "--server.headless=true",
+        "--server.enableCORS=false",
+        "--server.enableXsrfProtection=false",
         "--browser.gatherUsageStats=false",
         "--server.port=8501",
     ]
@@ -62,43 +65,45 @@ else:
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
     )
-    for _ in range(15):
+    for _ in range(20):
         time.sleep(1)
         if is_port_in_use(8501):
             break
 
-print("2. Generating secure public web link via Cloudflare...")
+print("2. Connecting to Cloudflare secure tunnel...")
 
-# 2. Start Cloudflare Tunnel
+# Ensure log directory exists
+LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+tunnel_log = open(LOG_FILE, "w", encoding="utf-8", errors="replace")
+
+# 2. Start Cloudflare Tunnel (redirect stderr to file to prevent Windows pipe buffer deadlocks)
 tunnel_cmd = [
     str(CLOUDFLARED_PATH),
     "tunnel",
     "--url",
-    "http://localhost:8501",
+    "http://127.0.0.1:8501",
 ]
 
 tunnel_proc = subprocess.Popen(
     tunnel_cmd,
-    stderr=subprocess.PIPE,
+    stderr=tunnel_log,
     stdout=subprocess.DEVNULL,
-    text=True,
-    encoding="utf-8",
-    errors="replace",
 )
 
 public_url = None
 url_regex = re.compile(r"https://[a-zA-Z0-9-]+\.trycloudflare\.com")
 
-# Read lines from tunnel process to capture the public URL
-for _ in range(60):
-    line = tunnel_proc.stderr.readline()
-    if not line:
-        time.sleep(0.5)
-        continue
-    match = url_regex.search(line)
-    if match:
-        public_url = match.group(0)
-        break
+# Read from log file until the public URL appears
+for _ in range(40):
+    time.sleep(0.5)
+    try:
+        content = LOG_FILE.read_text(encoding="utf-8", errors="ignore")
+        match = url_regex.search(content)
+        if match:
+            public_url = match.group(0)
+            break
+    except Exception:
+        pass
 
 if public_url:
     # Save link to a file for easy copying
@@ -129,10 +134,10 @@ if public_url:
     print("=" * 70)
     print()
 
-    # Open the browser to the public link
+    # Open browser directly to the public link
     webbrowser.open(public_url)
 else:
-    print("Notice: Could not automatically detect public link. Falling back to local mode:")
+    print("Notice: Generating tunnel link took longer than expected. Falling back to local mode:")
     print(">> http://localhost:8501")
     webbrowser.open("http://localhost:8501")
 
@@ -141,8 +146,10 @@ try:
     while True:
         time.sleep(1)
         if tunnel_proc.poll() is not None:
+            print("\nCloudflare tunnel process ended.")
             break
         if streamlit_proc is not None and streamlit_proc.poll() is not None:
+            print("\nStreamlit process ended.")
             break
 except KeyboardInterrupt:
     print("\nStopping online application...")
@@ -151,4 +158,8 @@ finally:
         streamlit_proc.terminate()
     if tunnel_proc and tunnel_proc.poll() is None:
         tunnel_proc.terminate()
+    try:
+        tunnel_log.close()
+    except Exception:
+        pass
     print("Application stopped. Goodbye!")
