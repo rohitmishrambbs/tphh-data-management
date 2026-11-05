@@ -56,8 +56,6 @@ def check_authentication() -> bool:
                 else:
                     st.error("❌ Incorrect PIN. Please try again.")
 
-            st.caption("💡 *Default security PIN: `2026` (can be changed anytime in settings)*")
-
     return False
 
 
