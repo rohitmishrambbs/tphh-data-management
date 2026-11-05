@@ -47,7 +47,7 @@ def get_available_data_files() -> List[Path]:
 
 # App Branding
 APP_TITLE = "TPHH Data Management System"
-APP_SUBTITLE = "High-Performance Household & Scheme Database Management (900k+ Records)"
+APP_SUBTITLE = "Targeted Household & Leftover Beneficiary Portal (260k+ Records)"
 
 # Important Columns in the TPHH Dataset
 COL_FAMILY_ID = "src_family_id"

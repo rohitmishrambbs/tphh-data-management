@@ -228,8 +228,8 @@ def render_analytics_tab(df: pl.DataFrame):
         ]
         if COL_CARD_STATUS_MEMBER in df.columns:
             agg_exprs.extend([
-                (pl.col(COL_CARD_STATUS_MEMBER) == "Approved").sum().alias("Approved Cards"),
                 (pl.col(COL_CARD_STATUS_MEMBER) == "Not Applied").sum().alias("Not Applied"),
+                (pl.col(COL_CARD_STATUS_MEMBER) != "Not Applied").sum().alias("Pending / Other"),
             ])
         agg_exprs.append(pl.col(COL_SHOP_ID).n_unique().alias("Active FPS Shops"))
 

@@ -144,7 +144,7 @@ with st.sidebar:
     st.markdown(
         """
         ### 💡 Quick Guide
-        - **High-Speed Engine**: 900k+ rows cached in Parquet for sub-second reload.
+        - **High-Speed Engine**: 260k+ leftover records cached in Parquet for sub-second reload.
         - **Navigation**: Switch between tabs above to explore, clean, filter, and export.
         """
     )

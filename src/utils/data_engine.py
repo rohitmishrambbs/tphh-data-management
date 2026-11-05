@@ -61,7 +61,7 @@ def load_dataset(file_path: Path, force_reload: bool = False) -> tuple[pl.DataFr
                 .replace({"": "Not Applied", "NULL": "Not Applied", "null": "Not Applied", "None": "Not Applied"})
                 .fill_null("Not Applied")
                 .alias(COL_CARD_STATUS_MEMBER)
-            )
+            ).filter(pl.col(COL_CARD_STATUS_MEMBER) != "Approved")
         load_time = time.time() - t0
         return df, load_time, True
 
@@ -109,7 +109,7 @@ def load_dataset(file_path: Path, force_reload: bool = False) -> tuple[pl.DataFr
             .alias(COL_MOBILE)
         )
 
-    # Treat blank card_status_member entries as "Not Applied"
+    # Treat blank card_status_member entries as "Not Applied" and filter out Approved
     if COL_CARD_STATUS_MEMBER in df.columns:
         df = df.with_columns(
             pl.col(COL_CARD_STATUS_MEMBER)
@@ -118,7 +118,7 @@ def load_dataset(file_path: Path, force_reload: bool = False) -> tuple[pl.DataFr
             .replace({"": "Not Applied", "NULL": "Not Applied", "null": "Not Applied", "None": "Not Applied"})
             .fill_null("Not Applied")
             .alias(COL_CARD_STATUS_MEMBER)
-        )
+        ).filter(pl.col(COL_CARD_STATUS_MEMBER) != "Approved")
 
     # Save to high-speed parquet cache
     df.write_parquet(cache_path, compression="zstd")

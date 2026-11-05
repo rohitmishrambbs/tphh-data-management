@@ -153,13 +153,13 @@ def render_filter_tab(df: pl.DataFrame):
     filtered_records = filtered_df.height
     pct_remaining = round((filtered_records / total_records) * 100, 2) if total_records > 0 else 0
 
-    approved_count = (
-        filtered_df.filter(pl.col(COL_CARD_STATUS_MEMBER) == "Approved").height
+    not_applied_count = (
+        filtered_df.filter(pl.col(COL_CARD_STATUS_MEMBER) == "Not Applied").height
         if COL_CARD_STATUS_MEMBER in filtered_df.columns and filtered_records > 0
         else 0
     )
-    not_applied_count = (
-        filtered_df.filter(pl.col(COL_CARD_STATUS_MEMBER) == "Not Applied").height
+    pending_count = (
+        filtered_df.filter(pl.col(COL_CARD_STATUS_MEMBER).is_in(["P", "S", "Disable", "D"])).height
         if COL_CARD_STATUS_MEMBER in filtered_df.columns and filtered_records > 0
         else 0
     )
@@ -177,15 +177,15 @@ def render_filter_tab(df: pl.DataFrame):
         )
     with k2:
         st.metric(
-            "Approved Cards",
-            f"{approved_count:,}",
-            help="Beneficiaries with 'Approved' card_status_member in the filtered view."
+            "Not Applied",
+            f"{not_applied_count:,}",
+            help="Beneficiaries with 'Not Applied' status in the filtered view."
         )
     with k3:
         st.metric(
-            "Not Applied",
-            f"{not_applied_count:,}",
-            help="Beneficiaries with 'Not Applied' (blank) card_status_member in the filtered view."
+            "Other Pending / Status",
+            f"{pending_count:,}",
+            help="Beneficiaries with other pending/special status (P, S, Disable, D)."
         )
     with k4:
         st.metric(
