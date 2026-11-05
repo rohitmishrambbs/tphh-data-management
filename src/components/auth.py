@@ -67,3 +67,4 @@ def render_logout_button():
         if st.sidebar.button("🔒 Log Out", use_container_width=True):
             st.session_state["authenticated"] = False
             st.rerun()
+

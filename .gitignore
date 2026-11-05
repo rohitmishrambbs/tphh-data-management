@@ -16,11 +16,14 @@ data/raw/*
 data/exports/*
 !data/exports/.gitkeep
 
-# Local OS & Windows tools
-tools/cloudflared.exe
+# Local OS, Logs, & Windows tools
+tools/
+*.log
+*.txt
+!requirements.txt
+Desktop.ini
 Thumbs.db
 ehthumbs.db
-Desktop.ini
 
 # Keep high-speed database cache
 !data/processed/Azamgarh_TPHH_02_NOV_2026_cache.parquet
