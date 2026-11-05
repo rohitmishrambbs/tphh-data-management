@@ -1,0 +1,26 @@
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Large Raw Files (exceeding GitHub's 100MB limit)
+*.csv
+*.xlsx
+*.xls
+*.xlsm
+data/raw/*
+!data/raw/.gitkeep
+
+# Temporary Exports
+data/exports/*
+!data/exports/.gitkeep
+
+# Local OS & Windows tools
+tools/cloudflared.exe
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Keep high-speed database cache
+!data/processed/Azamgarh_TPHH_02_NOV_2026_cache.parquet

@@ -1,0 +1,17 @@
+# TPHH Data Management System - Python Dependencies
+
+# Web Application Framework
+streamlit>=1.40.0
+
+# High-Performance Data Processing (Rust-powered, Multi-threaded)
+polars>=1.15.0
+pyarrow>=18.0.0
+
+# Ultra-Fast Excel Reading & Writing for Large Datasets (300k+ rows)
+fastexcel>=0.12.0
+openpyxl>=3.1.5
+xlsxwriter>=3.2.0
+
+# Interactive Charts and Visualizations
+plotly>=5.24.0
+
