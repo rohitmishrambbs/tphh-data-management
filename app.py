@@ -9,6 +9,7 @@ import polars as pl
 from src.config import (
     APP_TITLE,
     APP_SUBTITLE,
+    DEFAULT_APP_PIN,
     DEFAULT_RAW_FILE,
     RAW_DATA_DIR,
     get_available_data_files,
@@ -159,6 +160,26 @@ with st.sidebar:
                 f.write(uploaded_file.getbuffer())
             active_file_path = save_path
             st.success(f"फ़ाइल लोड हो गई: `{uploaded_file.name}`")
+
+        # Admin PIN Configuration
+        st.markdown("---")
+        st.markdown("##### 🔐 सुरक्षा पिन (Security PIN)")
+        active_pin = st.session_state.get("custom_app_pin", DEFAULT_APP_PIN)
+        st.caption(f"वर्तमान सक्रिय पिन: **`{active_pin}`**")
+        new_admin_pin = st.text_input(
+            "पिन बदलें (Change PIN):",
+            value=active_pin,
+            key="admin_change_pin_input",
+            help="इस पिन का उपयोग पोर्टल लॉगिन स्क्रीन पर किया जाता है।",
+        )
+        if st.button("💾 पिन सेव करें (Save PIN)", key="btn_update_pin", use_container_width=True):
+            clean_pin = new_admin_pin.strip()
+            if clean_pin:
+                st.session_state["custom_app_pin"] = clean_pin
+                st.success(f"सुरक्षा पिन सफलता से `{clean_pin}` पर सेट हो गया!")
+                st.rerun()
+            else:
+                st.error("कृपया कम से कम एक मान्य अंक या पासवर्ड दर्ज करें।")
 
     st.markdown("<br>", unsafe_allow_html=True)
     render_logout_button()

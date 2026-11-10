@@ -27,7 +27,7 @@ else:
     DEFAULT_RAW_FILE = DEFAULT_CSV_FILE
 
 # Security & Access Control for Online Deployment
-DEFAULT_APP_PIN = "2026"
+DEFAULT_APP_PIN = "2016"
 
 
 def get_available_data_files() -> List[Path]:

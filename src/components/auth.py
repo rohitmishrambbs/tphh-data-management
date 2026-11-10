@@ -14,11 +14,15 @@ def check_authentication() -> bool:
     if st.session_state.get("authenticated", False):
         return True
 
-    # Retrieve expected PIN (from Streamlit Cloud Secrets if configured, otherwise default)
-    try:
-        expected_pin = st.secrets.get("APP_PIN", DEFAULT_APP_PIN)
-    except Exception:
-        expected_pin = DEFAULT_APP_PIN
+    # Retrieve expected PIN (session override first, then Streamlit Secrets, then default)
+    expected_pin = st.session_state.get("custom_app_pin")
+    if not expected_pin:
+        try:
+            expected_pin = str(st.secrets.get("APP_PIN", DEFAULT_APP_PIN)).strip()
+        except Exception:
+            expected_pin = str(DEFAULT_APP_PIN).strip()
+    else:
+        expected_pin = str(expected_pin).strip()
 
     # Center-aligned authentication screen
     _, center_col, _ = st.columns([1, 1.8, 1])
@@ -49,7 +53,7 @@ def check_authentication() -> bool:
             submit_btn = st.button("🔓 Unlock Portal", type="primary", use_container_width=True)
 
             if submit_btn:
-                if pin_input == expected_pin:
+                if pin_input.strip() == expected_pin:
                     st.session_state["authenticated"] = True
                     st.success("Access Granted! Loading portal...")
                     st.rerun()

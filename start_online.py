@@ -9,6 +9,7 @@ import time
 import socket
 import webbrowser
 from pathlib import Path
+from src.config import DEFAULT_APP_PIN
 
 # Ensure UTF-8 output encoding across Windows consoles
 if sys.platform == "win32":
@@ -109,7 +110,7 @@ if public_url:
     # Save link to a file for easy copying
     try:
         LINK_FILE.write_text(
-            f"TPHH Portal Online Web Link:\n{public_url}\n\nSecurity Access PIN: 2026\n",
+            f"TPHH Portal Online Web Link:\n{public_url}\n\nSecurity Access PIN: {DEFAULT_APP_PIN}\n",
             encoding="utf-8"
         )
     except Exception:
@@ -122,7 +123,7 @@ if public_url:
     print()
     print(f"   PUBLIC WEB LINK:    {public_url}")
     print(f"   LOCAL LINK:         http://localhost:8501")
-    print(f"   DEFAULT ACCESS PIN: 2026")
+    print(f"   DEFAULT ACCESS PIN: {DEFAULT_APP_PIN}")
     print()
     print("   Share this link with anyone - they can open it on their phone,")
     print("   tablet, or laptop anywhere in the world!")
