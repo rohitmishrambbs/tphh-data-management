@@ -53,7 +53,7 @@ def render_operator_tab(df: pl.DataFrame):
                 🏢 ब्लॉक एवं ग्राम पंचायत ऑपरेटर पोर्टल (Operator Portal)
             </h3>
             <p style="color: #3B82F6; margin: 4px 0 0 0; font-size: 14px;">
-                छूटे हुए लाभार्थियों को खोजने, सत्यापन करने एवं शिविर (Camp) सूची डाउनलोड करने हेतु सरल पोर्टल
+                छूटे हुए लाभार्थियों को खोजने, सत्यापन करने एवं सूची डाउनलोड करने हेतु सरल पोर्टल
             </p>
         </div>
         """,
@@ -173,9 +173,9 @@ def render_operator_tab(df: pl.DataFrame):
     st.markdown("---")
 
     # STEP 3: Action Buttons (Download Lists)
-    st.markdown("#### 3️⃣ सूची डाउनलोड करें (Download & Print)")
+    st.markdown("#### 3️⃣ सूची डाउनलोड करें (Download List)")
     
-    down_col1, down_col2, _ = st.columns([1.5, 1.5, 1])
+    down_col1, _ = st.columns([2, 2])
 
     clean_block_tag = selected_block.replace("-- सभी ब्लॉक (All Blocks) --", "All_Blocks").replace(" ", "_")
     clean_gp_tag = selected_gp.replace("-- सभी ग्राम पंचायतें (All Panchayats) --", "All_GPs").replace(" ", "_")
@@ -200,30 +200,6 @@ def render_operator_tab(df: pl.DataFrame):
                         use_container_width=True,
                     )
 
-    with down_col2:
-        # Camp Verification Sheet Download (with extra blank signature & remark columns!)
-        if st.button("📋 शिविर सत्यापन फॉर्म (Field Camp Sheet)", use_container_width=True):
-            with st.spinner("शिविर फॉर्म तैयार हो रहा है..."):
-                target_camp_file = EXPORTS_DIR / f"{filename_base}_Camp_Sheet.xlsx"
-                camp_cols = [c for c in ["name", "father_guardian_name", "src_family_id", "village_gpname", "mobileno", "fps_ownername"] if c in filtered.columns]
-                camp_df = filtered.select(camp_cols).rename({c: FRIENDLY_COLUMNS[c] for c in camp_cols})
-                # Add blank columns for field worker verification
-                camp_df = camp_df.with_columns([
-                    pl.lit("").alias("सत्यापन स्थिति (Verified?)"),
-                    pl.lit("").alias("हस्ताक्षर / अंगूठा (Sign/Thumb)"),
-                    pl.lit("").alias("टिप्पणी (Remark)"),
-                ])
-                export_to_excel(camp_df, target_camp_file)
-                st.success(f"✅ शिविर सत्यापन फ़ाइल तैयार: `{target_camp_file.name}`")
-                with open(target_camp_file, "rb") as f:
-                    st.download_button(
-                        label=f"⬇️ {target_camp_file.name} सेव करें (Click to Save)",
-                        data=f.read(),
-                        file_name=target_camp_file.name,
-                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                        use_container_width=True,
-                    )
-
     st.markdown("<br>", unsafe_allow_html=True)
 
     # STEP 4: Table View
@@ -241,3 +217,4 @@ def render_operator_tab(df: pl.DataFrame):
     )
     if total_count > 1000:
         st.caption(f"ℹ️ पहले 1,000 रिकॉर्ड दिखाए जा रहे हैं। पूरी {total_count:,} रिकॉर्ड की सूची ऊपर दिए गए बटन से एक्सेल में डाउनलोड करें।")
+

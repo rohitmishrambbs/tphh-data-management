@@ -27,7 +27,7 @@ def render_panchayat_summary_tab(df: pl.DataFrame):
                 📋 ग्राम पंचायतवार प्रगति एवं रैंकिंग रिपोर्ट (Panchayat Ranking Report)
             </h3>
             <p style="color: #64748B; margin: 4px 0 0 0; font-size: 14px;">
-                देखें कि आपके ब्लॉक में किस ग्राम पंचायत में सबसे अधिक लाभार्थी छूटे हुए हैं ताकि वहां पहले शिविर लगाया जा सके।
+                देखें कि आपके ब्लॉक में किस ग्राम पंचायत में कितने लाभार्थी छूटे हुए हैं।
             </p>
         </div>
         """,
@@ -94,3 +94,4 @@ def render_panchayat_summary_tab(df: pl.DataFrame):
                         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                         use_container_width=True,
                     )
+
